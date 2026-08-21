@@ -3,140 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopAI — Task 6: Giao Diện Quên & Đổi Mật Khẩu (HTTMDTTHA-51)</title>
+    <title>ShopAI Market — Task 6: Giao Diện Quên & Đổi Mật Khẩu (HTTMDTTHA-51)</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'system-ui'] } } }
+            theme: {
+                extend: {
+                    fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'system-ui'] },
+                    colors: {
+                        brand: { 50:'#eef2ff', 100:'#e0e7ff', 200:'#c7d2fe', 300:'#a5b4fc', 400:'#818cf8', 500:'#6366f1', 600:'#4f46e5', 700:'#4338ca' }
+                    }
+                }
+            }
         }
     </script>
     <style>
-        * { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
-        .blob { position: fixed; border-radius: 50%; filter: blur(80px); opacity: .4; pointer-events: none; z-index: 0; }
-        .blob-1 { width: 450px; height: 450px; background: radial-gradient(circle, rgba(99,102,241,.12), transparent 70%); top: -5%; right: 10%; }
+        .ambient-blobs { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .45; }
+        .blob-1 { width: 450px; height: 450px; background: radial-gradient(circle, rgba(99,102,241,.14), transparent 70%); top: -5%; right: 5%; }
         .blob-2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(16,185,129,.1), transparent 70%); bottom: 5%; left: 5%; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
-        .anim { opacity:0; animation: fadeUp .5s cubic-bezier(.16,1,.3,1) forwards; }
-        .tab-btn { transition: all .25s ease; }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        .anim-entry { opacity: 0; animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .btn-shimmer { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%); transform: translateX(-100%); }
+        .btn-primary:hover .btn-shimmer { animation: shimmer 0.8s forwards; }
+        @keyframes shimmer { to { transform: translateX(100%); } }
+        .tab-btn { transition: all 0.25s ease; }
         .tab-btn.active { background: #4f46e5; color: white; box-shadow: 0 4px 14px rgba(79,70,229,.3); }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-800 min-h-screen flex flex-col justify-between">
-    <div class="blob blob-1" aria-hidden="true"></div>
-    <div class="blob blob-2" aria-hidden="true"></div>
+<body class="font-jakarta bg-[#F8FAFC] text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <!-- Header -->
+    <!-- Ambient Blobs -->
+    <div class="ambient-blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Header Navigation Bar -->
     <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <a href="#" class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.3 2.3c-.5.5-.1 1.3.6 1.3H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
                 </div>
-                <span class="text-xl font-extrabold text-slate-900">Shop<span class="text-indigo-600">AI</span></span>
+                <span class="text-xl font-extrabold text-slate-900">Shop<span class="text-brand-600">AI</span></span>
             </a>
-            <span class="text-sm font-semibold text-slate-500">Task 6: FE Giao Diện Quên & Đổi Mật Khẩu (HTTMDTTHA-51)</span>
+            <div class="flex items-center gap-5 text-sm text-slate-500">
+                <span class="font-semibold text-slate-700">Task 6: FE Giao Diện Quên & Đổi Mật Khẩu (HTTMDTTHA-51)</span>
+            </div>
         </div>
     </header>
 
-    <main class="relative z-10 max-w-xl w-full mx-auto px-6 py-10">
-        <!-- Switcher Tabs -->
-        <div class="bg-slate-100 p-1.5 rounded-2xl flex gap-2 mb-8 border border-slate-200">
-            <button id="btnTabForgot" onclick="switchFE('forgot')" class="tab-btn active flex-1 py-3 font-bold text-sm rounded-xl text-center">
-                🔑 1. Giao Diện Quên Mật Khẩu
-            </button>
-            <button id="btnTabChange" onclick="switchFE('change')" class="tab-btn flex-1 py-3 font-bold text-sm text-slate-500 rounded-xl text-center">
-                🔒 2. Giao Diện Đổi Mật Khẩu
-            </button>
-        </div>
+    <!-- Main Container -->
+    <main class="relative z-10 max-w-6xl w-full mx-auto px-6 py-12 flex-1 flex items-center justify-center">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+            
+            <!-- Left Showcase Banner -->
+            <div class="anim-entry hidden lg:block">
+                <span class="inline-flex items-center gap-2 text-xs font-semibold text-brand-600 bg-brand-50 border border-brand-100 rounded-full px-3.5 py-1.5 mb-4">
+                    ✨ Frontend Portal — HTTMDTTHA-51
+                </span>
+                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">
+                    Giao Diện Bảo Mật <br>
+                    <span class="bg-gradient-to-r from-brand-600 to-violet-500 bg-clip-text text-transparent">Quên & Đổi Mật Khẩu</span>
+                </h1>
+                <p class="text-slate-500 text-sm leading-relaxed mb-8">
+                    Trải nghiệm giao diện người dùng E-Commerce cao cấp tích hợp mã OTP 6 chữ số, đo độ mạnh mật khẩu và mã hóa Bcrypt.
+                </p>
 
-        <!-- 1. FE QUÊN MẬT KHẨU (FORGOT) -->
-        <div id="boxForgot" class="anim bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-8 sm:p-10">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-1">Cổng Quên Mật Khẩu 3 Bước</h2>
-            <p class="text-sm text-slate-400 mb-6">Xác thực OTP 6 chữ số và tạo mật khẩu mới an toàn</p>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Tài Khoản</label>
-                    <input type="email" id="forgotEmail" value="ducmanh@shopai.vn" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+                <div class="space-y-4">
+                    <div class="p-4 bg-white rounded-2xl border border-slate-150 shadow-sm flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">🔑</div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">Quên Mật Khẩu (3 Bước)</h4>
+                            <p class="text-xs text-slate-400">Nhập Email ➔ Xác thực OTP 6 số ➔ Đặt lại mật khẩu</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white rounded-2xl border border-slate-150 shadow-sm flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">🔒</div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">Đổi Mật Khẩu Tài Khoản</h4>
+                            <p class="text-xs text-slate-400">Xác nhận mật khẩu cũ & lưu mật khẩu băm Bcrypt</p>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mã OTP (6 Chữ Số)</label>
-                    <input type="text" id="forgotOTP" maxlength="6" value="654321" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold tracking-widest text-indigo-600 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu Mới</label>
-                    <input type="password" id="forgotNewPass" value="NewPass2026!" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
-                </div>
-                <button onclick="submitForgotFE()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 active:scale-95 transition-all">
-                    Xác Thực OTP & Đặt Mật Khẩu Mới
-                </button>
             </div>
-            <div id="alertForgot" class="mt-4 hidden p-3 rounded-xl text-xs font-bold"></div>
-        </div>
 
-        <!-- 2. FE ĐỔI MẬT KHẨU (CHANGE) -->
-        <div id="boxChange" class="anim hidden bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-8 sm:p-10">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-1">Cài Đặt Đổi Mật Khẩu</h2>
-            <p class="text-sm text-slate-400 mb-6">Yêu cầu xác nhận mật khẩu hiện tại bảo vệ bởi JWT</p>
+            <!-- Right Combined Form Card -->
+            <div class="anim-entry bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-8 sm:p-10">
+                <!-- Segmented Tab Switcher -->
+                <div class="bg-slate-100 p-1.5 rounded-2xl flex gap-2 mb-8 border border-slate-200">
+                    <button id="btnForgot" onclick="switchFE('forgot')" class="tab-btn active flex-1 py-3 font-bold text-sm rounded-xl text-center">
+                        🔑 Quên Mật Khẩu
+                    </button>
+                    <button id="btnChange" onclick="switchFE('change')" class="tab-btn flex-1 py-3 font-bold text-sm text-slate-500 rounded-xl text-center">
+                        🔒 Đổi Mật Khẩu
+                    </button>
+                </div>
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu Hiện Tại</label>
-                    <input type="password" id="oldPass" value="CurrentPass123!" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+                <!-- PANEL 1: QUÊN MẬT KHẨU -->
+                <div id="panelForgot">
+                    <h2 class="text-xl font-extrabold text-slate-900 mb-1">Khôi Phục Mật Khẩu</h2>
+                    <p class="text-xs text-slate-400 mb-6">Mã OTP test: <strong class="text-brand-600 font-mono">654321</strong></p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Tài Khoản</label>
+                            <input type="email" id="fEmail" value="ducmanh@shopai.vn" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mã OTP (6 Số)</label>
+                            <input type="text" id="fOTP" maxlength="6" value="654321" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold tracking-widest text-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu Mới</label>
+                            <input type="password" id="fNewPass" value="NewPass2026!" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none">
+                        </div>
+                        <button onclick="submitForgotFE()" class="btn-primary relative w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/25 active:scale-95 transition-all overflow-hidden">
+                            <span class="btn-shimmer"></span>
+                            <span class="relative z-10">Xác Thực & Đặt Lại Mật Khẩu</span>
+                        </button>
+                    </div>
+                    <div id="alertForgot" class="mt-4 hidden p-3 rounded-xl text-xs font-bold"></div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu Mới</label>
-                    <input type="password" id="newPass" value="BrandNewPass2026!" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+
+                <!-- PANEL 2: ĐỔI MẬT KHẨU -->
+                <div id="panelChange" class="hidden">
+                    <h2 class="text-xl font-extrabold text-slate-900 mb-1">Cài Đặt Đổi Mật Khẩu</h2>
+                    <p class="text-xs text-slate-400 mb-6">Mật khẩu cũ test: <strong class="text-brand-600 font-mono">CurrentPass123!</strong></p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu Hiện Tại</label>
+                            <input type="password" id="cOldPass" value="CurrentPass123!" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu Mới</label>
+                            <input type="password" id="cNewPass" value="BrandNewPass2026!" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none">
+                        </div>
+                        <button onclick="submitChangeFE()" class="btn-primary relative w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-95 transition-all overflow-hidden">
+                            <span class="btn-shimmer"></span>
+                            <span class="relative z-10">Cập Nhật Mật Khẩu Mới</span>
+                        </button>
+                    </div>
+                    <div id="alertChange" class="mt-4 hidden p-3 rounded-xl text-xs font-bold"></div>
                 </div>
-                <button onclick="submitChangeFE()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-95 transition-all">
-                    Cập Nhật Mật Khẩu Mới
-                </button>
+
             </div>
-            <div id="alertChange" class="mt-4 hidden p-3 rounded-xl text-xs font-bold"></div>
         </div>
     </main>
 
-    <footer class="text-center py-6 text-xs text-slate-400">
+    <footer class="text-center py-6 text-xs text-slate-400 border-t border-slate-100">
         © 2026 ShopAI Market — Task 6: Giao Diện Quên & Đổi Mật Khẩu (HTTMDTTHA-51)
     </footer>
 
     <script>
         function switchFE(mode) {
-            const fBox = document.getElementById('boxForgot');
-            const cBox = document.getElementById('boxChange');
-            const fBtn = document.getElementById('btnTabForgot');
-            const cBtn = document.getElementById('btnTabChange');
+            const pForgot = document.getElementById('panelForgot');
+            const pChange = document.getElementById('panelChange');
+            const btnF = document.getElementById('btnForgot');
+            const btnC = document.getElementById('btnChange');
 
             if (mode === 'forgot') {
-                fBox.classList.remove('hidden');
-                cBox.classList.add('hidden');
-                fBtn.className = 'tab-btn active flex-1 py-3 font-bold text-sm rounded-xl text-center';
-                cBtn.className = 'tab-btn flex-1 py-3 font-bold text-sm text-slate-500 rounded-xl text-center';
+                pForgot.classList.remove('hidden');
+                pChange.classList.add('hidden');
+                btnF.className = 'tab-btn active flex-1 py-3 font-bold text-sm rounded-xl text-center';
+                btnC.className = 'tab-btn flex-1 py-3 font-bold text-sm text-slate-500 rounded-xl text-center';
             } else {
-                fBox.classList.add('hidden');
-                cBox.classList.remove('hidden');
-                cBtn.className = 'tab-btn active flex-1 py-3 font-bold text-sm rounded-xl text-center';
-                fBtn.className = 'tab-btn flex-1 py-3 font-bold text-sm text-slate-500 rounded-xl text-center';
+                pForgot.classList.add('hidden');
+                pChange.classList.remove('hidden');
+                btnC.className = 'tab-btn active flex-1 py-3 font-bold text-sm rounded-xl text-center';
+                btnF.className = 'tab-btn flex-1 py-3 font-bold text-sm text-slate-500 rounded-xl text-center';
             }
         }
 
         function submitForgotFE() {
-            const email = document.getElementById('forgotEmail').value;
-            const otp = document.getElementById('forgotOTP').value;
+            const otp = document.getElementById('fOTP').value;
             const alert = document.getElementById('alertForgot');
             if (otp !== '654321') {
                 alert.className = 'mt-4 p-3 rounded-xl text-xs font-bold bg-red-50 text-red-600';
                 alert.textContent = '❌ Mã OTP không chính xác!';
             } else {
                 alert.className = 'mt-4 p-3 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-600';
-                alert.textContent = '🎉 Đã xác thực OTP & Cập nhật mật khẩu thành công cho ' + email;
+                alert.textContent = '🎉 Đã xác thực OTP & Cập nhật mật khẩu thành công!';
             }
             alert.classList.remove('hidden');
         }
 
         function submitChangeFE() {
-            const oldP = document.getElementById('oldPass').value;
+            const oldP = document.getElementById('cOldPass').value;
             const alert = document.getElementById('alertChange');
             if (!oldP) {
                 alert.className = 'mt-4 p-3 rounded-xl text-xs font-bold bg-red-50 text-red-600';
