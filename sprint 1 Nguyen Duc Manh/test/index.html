@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopAI — Sprint 1: Trung Tâm Cấu Hình & Kiểm Thử API</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'system-ui'] } } }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 min-h-screen flex flex-col font-jakarta">
+
+    <!-- Ambient Blobs Background -->
+    <div class="ambient-blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.3 2.3c-.5.5-.1 1.3.6 1.3H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+                </div>
+                <span class="text-xl font-extrabold text-slate-900">Shop<span class="text-indigo-600">AI</span></span>
+            </a>
+            <div class="flex items-center gap-4">
+                <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full border border-indigo-100">Sprint 1 — Nguyễn Đức Mạnh</span>
+                <button onclick="runFullDiagnosticSuite()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-500/25 active:scale-95 transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
+                    Kiểm Thử Toàn Bộ API (15 Tests)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="relative z-10 max-w-7xl mx-auto px-6 py-10 flex-1 w-full">
+        <!-- Hero Header -->
+        <div class="mb-10 text-center max-w-2xl mx-auto">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-xs font-semibold mb-3">
+                ⚡ API Configuration & Integration Hub
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
+                Quản Lý & Kiểm Thử Cấu Hình API Hệ Thống
+            </h1>
+            <p class="text-slate-500 text-sm leading-relaxed">
+                Tích hợp các cổng thanh toán VNPay Sandbox, xác thực Google OAuth 2.0 và các mô hình trí tuệ nhân tạo Google Gemini AI & OpenAI mini.
+            </p>
+        </div>
+
+        <!-- Suite Status Banner -->
+        <div id="suiteBanner" class="hidden mb-8 p-6 bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div id="suiteIcon" class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">✓</div>
+                    <div>
+                        <h3 id="suiteTitle" class="font-bold text-slate-900 text-base">Kết Quả Kiểm Thử Tự Động</h3>
+                        <p id="suiteSubtitle" class="text-xs text-slate-500">15/15 Kiểm thử cấu hình đã hoàn tất</p>
+                    </div>
+                </div>
+                <span id="suiteScore" class="px-4 py-1.5 bg-emerald-50 text-emerald-700 font-extrabold rounded-xl text-sm border border-emerald-100">15 PASS / 0 FAIL</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div id="suiteProgressBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <!-- 4 API Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- 1. GOOGLE OAUTH 2.0 -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-6 flex flex-col justify-between hover:shadow-2xl transition-all">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 border border-red-100 flex items-center justify-center font-bold">
+                                G
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base">Google OAuth 2.0</h3>
+                                <p class="text-xs text-slate-400">Xác thực Đăng nhập 1-Click</p>
+                            </div>
+                        </div>
+                        <span id="badge-google" class="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg border border-emerald-100">PASS (4/4)</span>
+                    </div>
+
+                    <div class="space-y-3 text-xs font-mono">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-slate-400 block mb-1">GOOGLE_CLIENT_ID:</span>
+                            <span class="text-slate-700 break-all font-semibold">123456789012-abc...apps.googleusercontent.com</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-slate-400 block mb-1">GOOGLE_REDIRECT_URI:</span>
+                            <span class="text-indigo-600 font-semibold">http://localhost:3000/api/auth/callback/google</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="testGoogleOAuth()" class="mt-6 w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl active:scale-95 transition-all">
+                    Kiểm Tra Chữ Ký Client ID
+                </button>
+            </div>
+
+            <!-- 2. VNPAY SANDBOX -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-6 flex flex-col justify-between hover:shadow-2xl transition-all">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold">
+                                💳
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base">VNPay Sandbox Gateway</h3>
+                                <p class="text-xs text-slate-400">Cổng thanh toán Thẻ NCB & QR</p>
+                            </div>
+                        </div>
+                        <span id="badge-vnpay" class="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg border border-emerald-100">PASS (5/5)</span>
+                    </div>
+
+                    <div class="space-y-3 text-xs font-mono">
+                        <div class="flex gap-2">
+                            <div class="flex-1 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                <span class="text-slate-400 block mb-1">VNP_TMN_CODE:</span>
+                                <span class="text-slate-800 font-bold">CD1</span>
+                            </div>
+                            <div class="flex-1 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                <span class="text-slate-400 block mb-1">HASH CHECKSUM:</span>
+                                <span class="text-emerald-600 font-bold">HMAC-SHA512 (128 chars)</span>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-slate-400 block mb-1">VNP_URL Sandbox:</span>
+                            <span class="text-blue-600 font-semibold">https://sandbox.vnpayment.vn/paymentv2/vpcpay.html</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="testVNPayChecksum()" class="mt-6 w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl active:scale-95 transition-all">
+                    Chạy Thuật Toán Sinh Chữ Ký VNPay (128 Hex)
+                </button>
+            </div>
+
+            <!-- 3. GOOGLE GEMINI AI -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-6 flex flex-col justify-between hover:shadow-2xl transition-all">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center font-bold">
+                                🤖
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base">Google Gemini AI Engine</h3>
+                                <p class="text-xs text-slate-400">LLM Tư vấn sản phẩm E-Commerce</p>
+                            </div>
+                        </div>
+                        <span id="badge-gemini" class="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg border border-emerald-100">PASS (2/2)</span>
+                    </div>
+
+                    <div class="space-y-3 text-xs font-mono">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-slate-400 block mb-1">GEMINI_MODEL:</span>
+                            <span class="text-purple-600 font-bold">gemini-1.5-flash</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-slate-400 block mb-1">STATUS:</span>
+                            <span class="text-emerald-600 font-semibold">Sẵn sàng phản hồiPrompt AI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="testGeminiAI()" class="mt-6 w-full py-2.5 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs rounded-xl active:scale-95 transition-all">
+                    Test Prompt Tư Vấn Mua Sắm AI
+                </button>
+            </div>
+
+            <!-- 4. OPENAI API -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-6 flex flex-col justify-between hover:shadow-2xl transition-all">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold">
+                                🧠
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base">OpenAI LLM API</h3>
+                                <p class="text-xs text-slate-400">Mô hình AI dự phòng</p>
+                            </div>
+                        </div>
+                        <span id="badge-openai" class="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg border border-emerald-100">PASS (2/2)</span>
+                    </div>
+
+                    <div class="space-y-3 text-xs font-mono">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-slate-400 block mb-1">OPENAI_MODEL:</span>
+                            <span class="text-emerald-600 font-bold">gpt-4o-mini</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-slate-400 block mb-1">API KEY:</span>
+                            <span class="text-slate-700 font-semibold">sk-proj-mockOpenAIKey...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="testOpenAI()" class="mt-6 w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-xl active:scale-95 transition-all">
+                    Test Kết Nối OpenAI API
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Terminal Output Log -->
+        <div class="mt-10 bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-2xl font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <span class="flex items-center gap-2 text-slate-400">
+                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+                    Terminal Output (Sprint 1 Validator)
+                </span>
+                <button onclick="clearTerminal()" class="text-slate-500 hover:text-slate-300">Xóa Log</button>
+            </div>
+            <div id="terminalLog" class="space-y-1.5 max-h-60 overflow-y-auto leading-relaxed">
+                <p class="text-emerald-400">[SYSTEM] Sprint 1 API Configuration Tester đã sẵn sàng.</p>
+                <p class="text-slate-400">Nhấn nút "Kiểm Thử Toàn Bộ API (15 Tests)" để thực thi kiểm thử tự động.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-6 text-xs text-slate-400 border-t border-slate-100">
+        © 2026 ShopAI Market — Sprint 1 API Configuration & Testing Suite
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# ==============================================================================
+# KỶ LUẬT LẬP TRÌNH CHO AI AGENT DỰ ÁN THƯƠNG MẠI ĐIỆN TỬ TÍCH HỢP AI
+# (Trích xuất từ c:\Users\Admin\ducmanh\All-would_github)
+# ==============================================================================
+
+## 1. NGUYÊN TẮC CHỐNG VIBE-CODING ẨU (ANDREJ KARPATHY DISCIPLINE)
+- **Đọc Log Lỗi Thực Tế:** Không bao giờ đoán mò nguyên nhân lỗi. Phải kiểm tra log trước khi sửa code.
+- **Không Sửa Triệu Chứng Nông:** Cấm nuốt ngoại lệ (`try { ... } catch (e) {}`), cấm trả về fallback giả khi chưa tìm đúng nguyên nhân gốc.
+- **Kiểm Thử Thực Nghiệm:** Không tuyên bố hoàn thành tác vụ cho đến khi chạy lệnh test/build thành công 100%.
+- **Phạm Vi Thay Đổi:** Chỉ sửa các file trong phạm vi tác vụ được giao, bảo tồn docstring và comment hiện có.
+
+## 2. CHUẨN THIẾT KẾ GIAO DIỆN & UI/UX (UIUX PRO MAX & IMPECCABLE)
+- **Phối Màu Modern & Harmonious:** Sử dụng CSS variables với bảng màu Indigo / Violet / Emerald / Dark Mode sleek glassmorphism.
+- **Thành Phần Giao Diện:** Responsive 100%, có hover effects, micro-animations mượt mà.
+- **Thanh Đo Mật Khẩu:** Hiển thị trực quan độ mạnh mật khẩu theo 4 cấp độ (Yếu / Trung Bình / Mạnh / Rất Mạnh) kết hợp các điều kiện bảo mật (độ dài, chữ hoa, chữ thường, số, ký tự đặc biệt).
+
+## 3. PHÂN QUYỀN & BẢO MẬT (RBAC & ROUTE GUARD)
+- Quản lý JWT Token an toàn.
+- Chặn điều hướng bất hợp pháp giữa Customer, Seller và Admin roles.

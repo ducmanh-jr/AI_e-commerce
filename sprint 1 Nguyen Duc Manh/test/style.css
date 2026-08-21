@@ -1,0 +1,35 @@
+/* ==============================================================================
+ * SPRINT 1 — LIGHT THEME DESIGN SYSTEM
+ * Dashboard Cấu hình & Kiểm thử API
+ * ============================================================================== */
+
+.ambient-blobs {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.45;
+}
+
+.blob-1 {
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(99,102,241,0.12), transparent 70%);
+    top: -5%;
+    right: 5%;
+}
+
+.blob-2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(16,185,129,0.1), transparent 70%);
+    bottom: 5%;
+    left: 5%;
+}

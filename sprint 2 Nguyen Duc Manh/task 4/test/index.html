@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopAI — Quên Mật Khẩu & Xác Thực OTP 3 Bước</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'system-ui'] } } }
+        }
+    </script>
+    <style>
+        * { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .blob { position: fixed; border-radius: 50%; filter: blur(80px); opacity: .4; pointer-events: none; z-index: 0; }
+        .blob-1 { width: 450px; height: 450px; background: radial-gradient(circle, rgba(99,102,241,.12), transparent 70%); top: -5%; right: 10%; }
+        .blob-2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(16,185,129,.1), transparent 70%); bottom: 5%; left: 5%; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+        .anim { opacity:0; animation: fadeUp .5s cubic-bezier(.16,1,.3,1) forwards; }
+        .step-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; transition: all .3s; }
+        .step-active { background: #4f46e5; color: white; box-shadow: 0 4px 14px rgba(79,70,229,.35); }
+        .step-done { background: #10b981; color: white; }
+        .step-pending { background: #f1f5f9; color: #94a3b8; }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 min-h-screen flex flex-col justify-between">
+    <div class="blob blob-1" aria-hidden="true"></div>
+    <div class="blob blob-2" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.3 2.3c-.5.5-.1 1.3.6 1.3H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+                </div>
+                <span class="text-xl font-extrabold text-slate-900">Shop<span class="text-indigo-600">AI</span></span>
+            </a>
+            <span class="text-sm font-semibold text-slate-500">Khôi Phục Mật Khẩu</span>
+        </div>
+    </header>
+
+    <main class="relative z-10 max-w-xl w-full mx-auto px-6 py-10">
+        <div class="anim bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 p-8 sm:p-10">
+            
+            <!-- Step Progress Indicator -->
+            <div class="flex items-center justify-between mb-8 relative">
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 -z-10"></div>
+                <div id="progressLine" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-indigo-600 -z-10 transition-all duration-300" style="width: 0%"></div>
+
+                <div class="flex flex-col items-center gap-1.5 bg-white px-2">
+                    <div id="circle1" class="step-circle step-active">1</div>
+                    <span class="text-xs font-semibold text-slate-600">Nhập Email</span>
+                </div>
+                <div class="flex flex-col items-center gap-1.5 bg-white px-2">
+                    <div id="circle2" class="step-circle step-pending">2</div>
+                    <span class="text-xs font-semibold text-slate-400">Xác Thực OTP</span>
+                </div>
+                <div class="flex flex-col items-center gap-1.5 bg-white px-2">
+                    <div id="circle3" class="step-circle step-pending">3</div>
+                    <span class="text-xs font-semibold text-slate-400">Mật Khẩu Mới</span>
+                </div>
+            </div>
+
+            <!-- BƯỚC 1: NHẬP EMAIL -->
+            <div id="step1Box">
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Quên Mật Khẩu?</h2>
+                <p class="text-sm text-slate-400 mb-6">Nhập email tài khoản của bạn để nhận mã OTP 6 chữ số khôi phục mật khẩu</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa Chỉ Email</label>
+                        <input type="email" id="emailInput" value="user_reset_test@ecommerce.vn" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" placeholder="user@example.com">
+                    </div>
+                    <button onclick="goToStep2()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 active:scale-95 transition-all">
+                        Gửi Mã OTP Xác Thực
+                    </button>
+                </div>
+            </div>
+
+            <!-- BƯỚC 2: XÁC THỰC OTP -->
+            <div id="step2Box" class="hidden">
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Nhập Mã OTP 6 Chữ Số</h2>
+                <p class="text-sm text-slate-400 mb-6">Mã OTP đã được gửi đến email <strong id="sentEmailDisplay" class="text-slate-700"></strong> (Mã test: <span class="font-mono font-bold text-indigo-600">654321</span>)</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mã Xác Thực OTP</label>
+                        <input type="text" id="otpInput" maxlength="6" value="654321" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-center text-2xl font-extrabold tracking-widest text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                    </div>
+                    <button onclick="goToStep3()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 active:scale-95 transition-all">
+                        Xác Thực OTP
+                    </button>
+                </div>
+            </div>
+
+            <!-- BƯỚC 3: MẬT KHẨU MỚI -->
+            <div id="step3Box" class="hidden">
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Đặt Mật Khẩu Mới</h2>
+                <p class="text-sm text-slate-400 mb-6">Mật khẩu mới phải có ít nhất 6 ký tự và được mã hóa bảo mật bcrypt</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu Mới</label>
+                        <input type="password" id="newPassInput" value="NewStrongPass123!" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                    </div>
+                    <button onclick="completeReset()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-95 transition-all">
+                        Cập Nhật Mật Khẩu Mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toast / Message Box -->
+            <div id="statusAlert" class="mt-6 hidden p-4 rounded-xl text-sm font-semibold"></div>
+        </div>
+    </main>
+
+    <footer class="text-center py-6 text-xs text-slate-400">
+        © 2026 ShopAI Market — Hệ thống thương mại điện tử tích hợp AI
+    </footer>
+
+    <script src="reset-service.js"></script>
+    <script>
+        let currentResetToken = null;
+
+        // Init mock OTP data
+        createMockOtp('user_reset_test@ecommerce.vn', '654321', 'mock_token_12345');
+
+        function goToStep2() {
+            const email = document.getElementById('emailInput').value;
+            if (!email) return showAlert('Vui lòng nhập Email!', 'error');
+
+            document.getElementById('sentEmailDisplay').textContent = email;
+            document.getElementById('step1Box').classList.add('hidden');
+            document.getElementById('step2Box').classList.remove('hidden');
+
+            document.getElementById('circle1').className = 'step-circle step-done';
+            document.getElementById('circle1').innerHTML = '✓';
+            document.getElementById('circle2').className = 'step-circle step-active';
+            document.getElementById('progressLine').style.width = '50%';
+
+            showAlert('Đã gửi mã OTP 654321 đến email!', 'success');
+        }
+
+        function goToStep3() {
+            const email = document.getElementById('emailInput').value;
+            const otp = document.getElementById('otpInput').value;
+
+            const res = verifyOTP(email, otp);
+            if (!res.success) {
+                return showAlert(res.message, 'error');
+            }
+
+            currentResetToken = res.resetToken;
+            document.getElementById('step2Box').classList.add('hidden');
+            document.getElementById('step3Box').classList.remove('hidden');
+
+            document.getElementById('circle2').className = 'step-circle step-done';
+            document.getElementById('circle2').innerHTML = '✓';
+            document.getElementById('circle3').className = 'step-circle step-active';
+            document.getElementById('progressLine').style.width = '100%';
+
+            showAlert('Xác thực OTP thành công! Vui lòng tạo mật khẩu mới.', 'success');
+        }
+
+        function completeReset() {
+            const email = document.getElementById('emailInput').value;
+            const newPass = document.getElementById('newPassInput').value;
+
+            const res = resetPassword(email, currentResetToken, newPass);
+            if (!res.success) {
+                return showAlert(res.message, 'error');
+            }
+
+            document.getElementById('circle3').className = 'step-circle step-done';
+            document.getElementById('circle3').innerHTML = '✓';
+
+            showAlert('🎉 Đặt lại mật khẩu thành công! Bạn có thể đăng nhập bằng mật khẩu mới.', 'success');
+        }
+
+        function showAlert(msg, type) {
+            const el = document.getElementById('statusAlert');
+            el.classList.remove('hidden', 'bg-red-50', 'text-red-600', 'bg-emerald-50', 'text-emerald-600');
+            if (type === 'error') {
+                el.classList.add('bg-red-50', 'text-red-600');
+            } else {
+                el.classList.add('bg-emerald-50', 'text-emerald-600');
+            }
+            el.textContent = msg;
+        }
+    </script>
+</body>
+</html>
