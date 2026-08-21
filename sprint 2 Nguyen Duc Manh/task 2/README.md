@@ -1,34 +1,35 @@
-# 🛡️ Task 2: HTTMDTTHA-9 — Protected Routes & Role-Based Access Control (RBAC)
+# 🎨 Task 2: HTTMDTTHA-9 — (FE) Kết nối API đăng ký / đăng nhập & protected routes
 
+![Type](https://img.shields.io/badge/Task_Type-FRONTEND_(FE)-indigo?style=for-the-badge)
 ![Build Status](https://img.shields.io/badge/Test_Suite-3%2F3_PASS-10b981?style=for-the-badge&logo=github)
 ![Sprint](https://img.shields.io/badge/Sprint-Sprint_2-indigo?style=for-the-badge)
 ![Member](https://img.shields.io/badge/Developer-Nguyen_Duc_Manh-blue?style=for-the-badge)
-![Tech Stack](https://img.shields.io/badge/Stack-Node.js_--_Express_--_JWT-0284c7?style=for-the-badge)
 
 ---
 
-## 📌 1. TỔNG QUAN NHIỆM VỤ
+## 📌 1. TỔNG QUAN NHIỆM VỤ JIRA
 
 - **Mã Jira Issue:** `HTTMDTTHA-9`
-- **Tên nhiệm vụ:** `[Backend] Phân quyền truy cập các Route Guard (Protect Route)`
+- **Loại nhiệm vụ:** `Frontend (FE)`
+- **Tên nhiệm vụ:** `(FE) Kết nối API đăng ký / đăng nhập & protected routes`
 - **Mục tiêu:**
-  - Xây dựng Middleware bảo vệ Route Endpoint (`authenticateToken`) kiểm tra Bearer JWT Token.
-  - Phân quyền người dùng (`requireRole`) ngăn chặn truy cập trái phép giữa các vai trò `Customer`, `Seller` và `Admin`.
-  - Trả về đúng mã HTTP Status Standard: `401 Unauthorized` (chưa đăng nhập) và `403 Forbidden` (không đủ quyền).
+  - Xây dựng giao diện mô phỏng kết nối API đăng ký / đăng nhập và điều hướng Protected Routes.
+  - Xây dựng Bảng điều khiển RBAC Router Guard kiểm tra Bearer JWT Token cho các vai trò `Customer`, `Seller` và `Admin`.
+  - Hiển thị trực quan phản hồi HTTP Status: `200 OK`, `401 Unauthorized` và `403 Forbidden`.
 
 ---
 
-## 📁 2. CẤU TRÚC THƯ MỤC CHUẨN KHOA HỌC
+## 📁 2. CẤU TRÚC THƯ MỤC FE
 
 ```
 task 2/
 ├── 📄 README.md                        # Báo cáo tổng quan Task 2
-├── 📁 mã nguồn/                        # Mã nguồn chính dự án
-│   ├── 📄 route-guard.js               # Middleware authenticateToken & requireRole
+├── 📁 mã nguồn/                        # Mã nguồn FE & Middlewares
+│   ├── 📄 route-guard.js               # Logic JWT & RBAC Route Guard
 │   └── 📄 auth-api.js                  # Router API Auth
 ├── 📁 test/                            # Thư mục kiểm thử & Demo UI
-│   ├── 📄 test.js                      # Automated Test Suite (3/3 PASS)
-│   └── 📄 index.html                   # Interactive RBAC Admin Dashboard (Light Theme)
+│   ├── 📄 index.html                   # Giao diện FE Admin RBAC Dashboard (Light Theme)
+│   └── 📄 test.js                      # Automated Test Suite (3/3 PASS)
 └── 📁 kết quả/                         # Kết quả kiểm thử & Minh chứng
     ├── 📄 README.md                    # Báo cáo chi tiết kết quả
     └── 🖼️ task 2.png                   # Ảnh chụp giao diện minh chứng
@@ -36,28 +37,7 @@ task 2/
 
 ---
 
-## 🔑 3. ĐẶC TẢ KỸ THUẬT & API ROUTE GUARDS
-
-```javascript
-// Example Usage in Express App:
-app.get('/api/admin/dashboard', 
-    authenticateToken, 
-    requireRole(['admin']), 
-    (req, res) => res.json({ success: true, message: 'Welcome Admin' })
-);
-```
-
-| HTTP Status | Trigger Condition | Response Format |
-|---|---|---|
-| `401 Unauthorized` | Không có Bearer Token trong Authorization Header | `{ success: false, message: "Yêu cầu Token xác thực." }` |
-| `403 Forbidden` | Token không hợp lệ hoặc User role không khớp | `{ success: false, message: "Quyền truy cập bị từ chối!" }` |
-| `200 OK` | Token hợp lệ & Role được phép truy cập | `{ success: true, data: [...] }` |
-
----
-
-## 🧪 4. HƯỚNG DẪN CHẠY KIỂM THỬ
-
-Mở Terminal tại thư mục `test/` và chạy lệnh:
+## 🧪 3. HƯỚNG DẪN CHẠY KIỂM THỬ
 
 ```bash
 cd test
@@ -66,20 +46,8 @@ node test.js
 
 ### Kết Quả Thực Nghiệm (3/3 PASS):
 ```text
-===============================================================
-🧪 KIỂM THỬ THỰC NGHIỆM TASK 2: HTTMDTTHA-9 (Route Guards & RBAC)
-===============================================================
   ✅ [PASS] Chặn truy cập Unauthenticated (HTTP 401).
   ✅ [PASS] Chặn Customer vào trang Admin (HTTP 403 Forbidden).
   ✅ [PASS] Cho phép Admin truy cập Admin Dashboard (HTTP 200 OK).
-
 📊 Kết quả Task 2: 3/3 PASS
-===============================================================
 ```
-
----
-
-## 🖼️ 5. MINH CHỨNG GIAO DIỆN & KẾT QUẢ
-
-Ảnh chụp giao diện sản phẩm thực tế được lưu tại:  
-📁 [`./kết quả/task 2.png`](./kết%20quả/task%202.png)
